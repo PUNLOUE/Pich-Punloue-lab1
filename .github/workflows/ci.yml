@@ -1,4 +1,4 @@
-name: Node.js CI (Yarn)
+name: Node.js CI & Deploy (npm)
 
 on:
   push:
@@ -21,29 +21,27 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'yarn'
+          cache: npm
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: npm ci
 
       - name: Lint code
-        run: yarn lint
+        run: npm run lint
 
       - name: Run tests
-        run: yarn test
-        
+        run: npm test
+
       - name: Upload coverage as artifact
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
           path: coverage
-          
-    deploy:
-      needs: build-and-test
-      runs-on: ubuntu-latest
-      if: >-
-        github.ref == 'refs/heads/main' &&
-        (success() || needs.build-and-test.result == 'success')
+
+  deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
