@@ -37,10 +37,13 @@ jobs:
         with:
           name: coverage-report
           path: coverage
-  deploy:
-    needs: build-and-test
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+          
+    deploy:
+      needs: build-and-test
+      runs-on: ubuntu-latest
+      if: >-
+        github.ref == 'refs/heads/main' &&
+        (success() || needs.build-and-test.result == 'success')
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
